@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUDO STAR // CYBER CLIENT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00ff88;
+            --secondary: #00d4ff;
+            --danger: #ff0055;
+            --warning: #ffaa00;
+            --dark: #0a0a0f;
+            --darker: #050508;
+            --card: rgba(10, 15, 25, 0.95);
+            --border: rgba(0, 255, 136, 0.3);
+            --glow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--darker);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Scan Line Effect */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                transparent 50%,
+                rgba(0, 0, 0, 0.1) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.3;
+        }
+
+        /* Matrix Rain */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, rgba(10, 15, 25, 0.98) 0%, rgba(5, 10, 20, 0.98) 100%);
+            border-right: 1px solid var(--border);
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo-section {
+            padding: 25px 20px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, transparent 100%);
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-shadow: var(--glow);
+            letter-spacing: 3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 212, 255, 0.4); }
+        }
+
+        .logo-subtitle {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--secondary);
+            letter-spacing: 2px;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        /* Status Card in Sidebar */
+        .status-card {
+            margin: 20px 15px;
+            padding: 15px;
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .status-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.7rem;
+            color: var(--primary);
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-title::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .status-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .status-label {
+            color: #888;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .status-value {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--danger);
+            transition: all 0.3s;
+        }
+
+        .status-dot.active {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Navigation */
+        .nav-section {
+            padding: 20px 0;
+            flex: 1;
+        }
+
+        .nav-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.65rem;
+            color: #555;
+            letter-spacing: 3px;
+            padding: 0 20px;
+            margin-bottom: 10px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 25px;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: rgba(0, 255, 136, 0.05);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, rgba(0, 255, 136, 0.15) 0%, transparent 100%);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 100%;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Stats in Sidebar */
+        .sidebar-stats {
+            padding: 20px 15px;
+            border-top: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .stat-text {
+            font-size: 0.65rem;
+            color: #666;
+            letter-spacing: 1px;
+            margin-top: 4px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 25px;
+            position: relative;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 20px 25px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-title span {
+            color: var(--primary);
+        }
+
+        .title-badge {
+            font-size: 0.6rem;
+            padding: 5px 12px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            color: var(--primary);
+            letter-spacing: 2px;
+        }
+
+        .server-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .server-status.connected {
+            border-color: var(--primary);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .server-status.disconnected {
+            border-color: var(--danger);
+            background: rgba(255, 0, 85, 0.1);
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--danger);
+        }
+
+        .pulse-dot.active {
+            background: var(--primary);
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+        }
+
+        /* Action Buttons */
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .cyber-btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cyber-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .cyber-btn:hover::before {
+            left: 100%;
+        }
+
+        .cyber-btn-primary {
+            background: linear-gradient(135deg, var(--primary), #00cc6a);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .cyber-btn-primary:hover {
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .cyber-btn-danger {
+            background: linear-gradient(135deg, var(--danger), #cc0044);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.3);
+        }
+
+        .cyber-btn-danger:hover {
+            box-shadow: 0 0 40px rgba(255, 0, 85, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .cyber-btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--primary);
+        }
+
+        .cyber-btn-secondary:hover {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--primary);
+        }
+
+        .cyber-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Panels Grid */
+        .panels-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .panels-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cyber-panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            background: linear-gradient(90deg, rgba(0, 255, 136, 0.1) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title-icon {
+            font-size: 1.2rem;
+        }
+
+        .panel-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .panel-ctrl-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #888;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .panel-ctrl-btn:hover {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .panel-ctrl-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #000;
+        }
+
+        .panel-body {
+            padding: 15px;
+        }
+
+        /* Terminal Log */
+        .terminal {
+            background: #0a0a0a;
+            border-radius: 10px;
+            height: 380px;
+            overflow-y: auto;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            padding: 15px;
+            border: 1px solid rgba(0, 255, 136, 0.1);
+        }
+
+        .terminal-line {
+            margin-bottom: 6px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            display: flex;
+            gap: 10px;
+            animation: typeIn 0.3s ease;
+        }
+
+        @keyframes typeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .terminal-line.info {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 2px solid var(--secondary);
+        }
+
+        .terminal-line.success {
+            background: rgba(0, 255, 136, 0.1);
+            border-left: 2px solid var(--primary);
+        }
+
+        .terminal-line.error {
+            background: rgba(255, 0, 85, 0.1);
+            border-left: 2px solid var(--danger);
+        }
+
+        .terminal-line.sent {
+            background: rgba(255, 170, 0, 0.1);
+            border-left: 2px solid var(--warning);
+        }
+
+        .terminal-line.received {
+            background: rgba(136, 0, 255, 0.1);
+            border-left: 2px solid #8800ff;
+        }
+
+        .terminal-time {
+            color: #555;
+            min-width: 70px;
+        }
+
+        .terminal-text {
+            color: #ccc;
+            word-break: break-all;
+        }
+
+        /* Message Panel */
+        .message-list {
+            background: #0a0a0a;
+            border-radius: 10px;
+            height: 380px;
+            overflow-y: auto;
+            padding: 15px;
+            border: 1px solid rgba(0, 255, 136, 0.1);
+        }
+
+        .msg-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+            animation: fadeSlide 0.3s ease;
+        }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-item.sent {
+            border-left: 3px solid var(--warning);
+        }
+
+        .msg-item.received {
+            border-left: 3px solid #8800ff;
+        }
+
+        .msg-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .msg-direction {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .msg-direction.sent { color: var(--warning); }
+        .msg-direction.received { color: #8800ff; }
+
+        .msg-rh {
+            padding: 3px 10px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 4px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--primary);
+        }
+
+        .msg-time {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: #555;
+        }
+
+        .msg-content {
+            position: relative;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 6px;
+            padding: 12px;
+            padding-right: 70px;
+        }
+
+        .msg-data {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: #aaa;
+            word-break: break-all;
+            line-height: 1.6;
+        }
+
+        .msg-data pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 5px 10px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--primary);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .copy-btn.copied {
+            background: var(--primary);
+            color: #000;
+        }
+
+        /* Input Section */
+        .input-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .cyber-input {
+            flex: 1;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .cyber-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        .cyber-input::placeholder {
+            color: #444;
+        }
+
+        /* Settings Panel */
+        .settings-container {
+            padding: 20px;
+        }
+
+        .settings-info {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 255, 136, 0.05) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .settings-info h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-info p {
+            font-size: 0.85rem;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        .settings-info code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: var(--primary);
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            color: var(--primary);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        .form-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .saved-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, var(--primary), #00cc6a);
+            color: #000;
+            border-radius: 10px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.4);
+            animation: slideUp 0.3s ease;
+            z-index: 9999;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Tab Content */
+        .tab-page {
+            display: none;
+        }
+
+        .tab-page.active {
+            display: block;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00cc6a;
+        }
+
+        /* Loading */
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: #000;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .logo-section {
+                padding: 15px 10px;
+            }
+
+            .logo {
+                justify-content: center;
+            }
+
+            .logo span, .logo-subtitle {
+                display: none;
+            }
+
+            .nav-link {
+                justify-content: center;
+                padding: 15px;
+            }
+
+            .nav-link span {
+                display: none;
+            }
+
+            .status-card, .sidebar-stats {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 70px;
+            }
+        }
+
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            animation: glitch-1 0.3s infinite;
+            color: var(--secondary);
+            z-index: -1;
+        }
+
+        .glitch::after {
+            animation: glitch-2 0.3s infinite;
+            color: var(--danger);
+            z-index: -2;
+        }
+
+        @keyframes glitch-1 {
+            0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+            20% { clip-path: inset(20% 0 60% 0); transform: translate(-2px, 2px); }
+            40% { clip-path: inset(40% 0 40% 0); transform: translate(2px, -2px); }
+            60% { clip-path: inset(60% 0 20% 0); transform: translate(-2px, 2px); }
+            80% { clip-path: inset(80% 0 0 0); transform: translate(2px, -2px); }
+        }
+
+        @keyframes glitch-2 {
+            0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+            20% { clip-path: inset(60% 0 20% 0); transform: translate(2px, -2px); }
+            40% { clip-path: inset(20% 0 60% 0); transform: translate(-2px, 2px); }
+            60% { clip-path: inset(80% 0 0 0); transform: translate(2px, -2px); }
+            80% { clip-path: inset(40% 0 40% 0); transform: translate(-2px, 2px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="scanline"></div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <div class="logo">
+                    <div class="logo-icon">🎲</div>
+                    <div>
+                        <span>LUDO<span style="color: var(--secondary)">STAR</span></span>
+                        <div class="logo-subtitle">CYBER CLIENT v2.0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <div class="status-title">SYSTEM STATUS</div>
+                <div class="status-items">
+                    <div class="status-row">
+                        <span class="status-label">WebSocket</span>
+                        <span class="status-value">
+                            <span class="status-dot" id="sideWsStatus"></span>
+                        </span>
+                    </div>
+                    <div class="status-row">
+                        <span class="status-label">Login</span>
+                        <span class="status-value">
+                            <span class="status-dot" id="sideLoginStatus"></span>
+                        </span>
+                    </div>
+                    <div class="status-row">
+                        <span class="status-label">Auth</span>
+                        <span class="status-value">
+                            <span class="status-dot" id="sideAuthStatus"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="nav-section">
+                <div class="nav-label">NAVIGATION</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a class="nav-link active" onclick="switchPage('dashboard')" data-page="dashboard">
+                            <span class="nav-icon">📡</span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="switchPage('terminal')" data-page="terminal">
+                            <span class="nav-icon">💻</span>
+                            <span>Terminal</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="switchPage('packets')" data-page="packets">
+                            <span class="nav-icon">📦</span>
+                            <span>Packets</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="switchPage('settings')" data-page="settings">
+                            <span class="nav-icon">⚙️</span>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-stats">
+                <div class="stat-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" id="statSent">0</div>
+                        <div class="stat-text">SENT</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="statRecv">0</div>
+                        <div class="stat-text">RECV</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="statHb">0</div>
+                        <div class="stat-text">HEARTBEAT</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="statPkts">0</div>
+                        <div class="stat-text">PACKETS</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="page-title">
+                    <span class="glitch" data-text="CYBER">CYBER</span> CONTROL PANEL
+                    <span class="title-badge">ENCRYPTED</span>
+                </div>
+                <div class="server-status disconnected" id="serverStatus">
+                    <span class="pulse-dot" id="serverDot"></span>
+                    <span id="serverText">CONNECTING...</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div class="tab-page active" id="page-dashboard">
+                <div class="action-bar">
+                    <button class="cyber-btn cyber-btn-primary" id="btnStart" onclick="startConnection()">
+                        <span>⚡</span> INITIALIZE CONNECTION
+                    </button>
+                    <button class="cyber-btn cyber-btn-danger" id="btnDisconnect" onclick="disconnect()" disabled>
+                        <span>🔌</span> TERMINATE
+                    </button>
+                    <button class="cyber-btn cyber-btn-secondary" onclick="clearLogs()">
+                        <span>🗑️</span> CLEAR DATA
+                    </button>
+                </div>
+
+                <div class="panels-grid">
+                    <div class="cyber-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <span class="panel-title-icon">💻</span>
+                                SYSTEM LOGS
+                            </div>
+                            <span id="logCount" style="font-size: 0.75rem; color: #555;">0 entries</span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="terminal" id="logContainer"></div>
+                        </div>
+                    </div>
+
+                    <div class="cyber-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <span class="panel-title-icon">📦</span>
+                                PACKET STREAM
+                            </div>
+                            <div class="panel-controls">
+                                <button class="panel-ctrl-btn active" id="btnBase64" onclick="setViewMode('base64')" title="Base64">B64</button>
+                                <button class="panel-ctrl-btn" id="btnDecoded" onclick="setViewMode('decoded')" title="Decoded">DEC</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="message-list" id="messagesView"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-bar">
+                    <input type="text" class="cyber-input" id="messageInput" placeholder=">> Enter base64 payload to transmit..." onkeypress="handleKeyPress(event)">
+                    <button class="cyber-btn cyber-btn-primary" onclick="sendCustomMessage()">
+                        <span>📤</span> TRANSMIT
+                    </button>
+                </div>
+            </div>
+
+            <!-- Terminal Page -->
+            <div class="tab-page" id="page-terminal">
+                <div class="cyber-panel" style="height: calc(100vh - 180px);">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <span class="panel-title-icon">💻</span>
+                            LIVE TERMINAL
+                        </div>
+                        <button class="panel-ctrl-btn" onclick="clearLogs()" title="Clear">🗑️</button>
+                    </div>
+                    <div class="panel-body" style="height: calc(100% - 60px);">
+                        <div class="terminal" id="terminalView" style="height: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Packets Page -->
+            <div class="tab-page" id="page-packets">
+                <div class="action-bar">
+                    <button class="cyber-btn cyber-btn-secondary" onclick="clearLogs()">
+                        <span>🗑️</span> CLEAR PACKETS
+                    </button>
+                    <div class="panel-controls" style="margin-left: auto;">
+                        <button class="panel-ctrl-btn active" id="btnBase64_2" onclick="setViewMode('base64')">BASE64</button>
+                        <button class="panel-ctrl-btn" id="btnDecoded_2" onclick="setViewMode('decoded')">DECODED</button>
+                    </div>
+                </div>
+
+                <div class="cyber-panel" style="height: calc(100vh - 250px);">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <span class="panel-title-icon">📦</span>
+                            ALL INTERCEPTED PACKETS
+                        </div>
+                        <span id="packetCount" style="font-size: 0.75rem; color: #555;">0 packets</span>
+                    </div>
+                    <div class="panel-body" style="height: calc(100% - 60px);">
+                        <div class="message-list" id="packetsView" style="height: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div class="tab-page" id="page-settings">
+                <div class="cyber-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <span class="panel-title-icon">⚙️</span>
+                            PAYLOAD CONFIGURATION
+                        </div>
+                    </div>
+                    <div class="settings-container">
+                        <div class="settings-info">
+                            <h3>💡 INFORMATION</h3>
+                            <p>Configure your connection payloads below. All changes are saved to <code>settings.json</code> and will persist across server restarts. Click <strong>SAVE CONFIG</strong> to apply changes.</p>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">🌐 API ENDPOINT</label>
+                                    <input type="text" class="form-input" id="settingsApiUrl" placeholder="https://api.ls.superkinglabs.com/api/userget">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">🔌 WEBSOCKET URL</label>
+                                    <input type="text" class="form-input" id="settingsWsUrl" placeholder="ws://ws.ls.superkinglabs.com/ws">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">📤 USERGET PAYLOAD (JSON)</label>
+                                <textarea class="form-textarea" id="settingsUserget" style="min-height: 180px;" placeholder='{"atte":4,"TZ":"+05",...}'></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">🔐 JO PAYLOAD (BASE64)</label>
+                                <textarea class="form-textarea" id="settingsJoPayload" placeholder="eyJSSCI6ImpvIi..."></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">💓 HEARTBEAT ACK</label>
+                                    <input type="text" class="form-input" id="settingsHeartbeat" placeholder="eyJSSCI6ImhhIi...">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">✅ AUTH CONFIRM REPLY</label>
+                                    <input type="text" class="form-input" id="settingsAuthReply" placeholder="eyJSSCI6InN0Ii...">
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="cyber-btn cyber-btn-danger" onclick="resetSettings()">
+                                    <span>🔄</span> RESET DEFAULTS
+                                </button>
+                                <button class="cyber-btn cyber-btn-primary" onclick="saveSettings()">
+                                    <span>💾</span> SAVE CONFIG
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // =========================
+        // STATE
+        // =========================
+        let serverWs = null;
+        let msgSentCount = 0;
+        let msgReceivedCount = 0;
+        let heartbeatCount = 0;
+        let logCount = 0;
+        let packetCount = 0;
+        let viewMode = 'base64';
+        let allMessages = [];
+        let currentSettings = {};
+
+        // =========================
+        // PAGE SWITCHING
+        // =========================
+        function switchPage(page) {
+            // Update nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-page="${page}"]`).classList.add('active');
+
+            // Update pages
+            document.querySelectorAll('.tab-page').forEach(p => {
+                p.classList.remove('active');
+            });
+            document.getElementById(`page-${page}`).classList.add('active');
+        }
+
+        // =========================
+        // UTILITIES
+        // =========================
+        function decodeBase64(b64) {
+            try {
+                return JSON.parse(atob(b64));
+            } catch {
+                return null;
+            }
+        }
+
+        function getTimestamp() {
+            return new Date().toISOString().split('T')[1].split('.')[0];
+        }
+
+        function updateStatus(wsActive, loginActive, authActive) {
+            document.getElementById('sideWsStatus').classList.toggle('active', wsActive);
+            document.getElementById('sideLoginStatus').classList.toggle('active', loginActive);
+            document.getElementById('sideAuthStatus').classList.toggle('active', authActive);
+        }
+
+        function updateStats() {
+            document.getElementById('statSent').textContent = msgSentCount;
+            document.getElementById('statRecv').textContent = msgReceivedCount;
+            document.getElementById('statHb').textContent = heartbeatCount;
+            document.getElementById('statPkts').textContent = packetCount;
+        }
+
+        function updateButtons(connected) {
+            document.getElementById('btnStart').disabled = connected;
+            document.getElementById('btnDisconnect').disabled = !connected;
+        }
+
+        function log(message, type = 'info') {
+            const containers = [
+                document.getElementById('logContainer'),
+                document.getElementById('terminalView')
+            ];
+            
+            containers.forEach(container => {
+                if (!container) return;
+                
+                const line = document.createElement('div');
+                line.className = `terminal-line ${type}`;
+                line.innerHTML = `
+                    <span class="terminal-time">${getTimestamp()}</span>
+                    <span class="terminal-text">${message}</span>
+                `;
+                container.appendChild(line);
+                container.scrollTop = container.scrollHeight;
+            });
+            
+            logCount++;
+            document.getElementById('logCount').textContent = `${logCount} entries`;
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'saved-toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = '✓ COPIED';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '📋 COPY';
+                    btn.classList.remove('copied');
+                }, 1500);
+            });
+        }
+
+        // =========================
+        // VIEW MODE
+        // =========================
+        function setViewMode(mode) {
+            viewMode = mode;
+            
+            // Update all toggle buttons
+            document.querySelectorAll('#btnBase64, #btnBase64_2').forEach(btn => {
+                btn.classList.toggle('active', mode === 'base64');
+            });
+            document.querySelectorAll('#btnDecoded, #btnDecoded_2').forEach(btn => {
+                btn.classList.toggle('active', mode === 'decoded');
+            });
+            
+            renderAllMessages();
+        }
+
+        function renderAllMessages() {
+            const containers = [
+                document.getElementById('messagesView'),
+                document.getElementById('packetsView')
+            ];
+            
+            containers.forEach(container => {
+                if (!container) return;
+                container.innerHTML = '';
+                
+                allMessages.forEach(msg => {
+                    renderMessage(container, msg.direction, msg.base64Message, msg.rh, msg.timestamp);
+                });
+            });
+        }
+
+        function renderMessage(container, direction, base64Message, rh, timestamp) {
+            const item = document.createElement('div');
+            item.className = `msg-item ${direction}`;
+            
+            const arrow = direction === 'sent' ? '📤 TRANSMITTED' : '📥 RECEIVED';
+            
+            let content;
+            if (viewMode === 'base64') {
+                content = base64Message;
+            } else {
+                const decoded = decodeBase64(base64Message);
+                content = decoded ? `<pre>${JSON.stringify(decoded, null, 2)}</pre>` : base64Message;
+            }
+            
+            const contentForCopy = viewMode === 'base64' 
+                ? base64Message 
+                : JSON.stringify(decodeBase64(base64Message), null, 2);
+            
+            item.innerHTML = `
+                <div class="msg-header">
+                    <span class="msg-direction ${direction}">
+                        ${arrow}
+                        <span class="msg-rh">RH: ${rh}</span>
+                    </span>
+                    <span class="msg-time">${timestamp}</span>
+                </div>
+                <div class="msg-content">
+                    <button class="copy-btn" onclick="copyToClipboard(\`${contentForCopy.replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`, this)">📋 COPY</button>
+                    <div class="msg-data">${content}</div>
+                </div>
+            `;
+            
+            container.appendChild(item);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addMessage(direction, base64Message, rh) {
+            const timestamp = getTimestamp();
+            
+            allMessages.push({
+                direction,
+                base64Message,
+                rh,
+                timestamp
+            });
+            
+            const containers = [
+                document.getElementById('messagesView'),
+                document.getElementById('packetsView')
+            ];
+            
+            containers.forEach(container => {
+                if (container) {
+                    renderMessage(container, direction, base64Message, rh, timestamp);
+                }
+            });
+            
+            packetCount++;
+            document.getElementById('packetCount').textContent = `${packetCount} packets`;
+            updateStats();
+        }
+
+        // =========================
+        // SETTINGS
+        // =========================
+        function loadSettingsToForm(settings) {
+            currentSettings = settings;
+            
+            document.getElementById('settingsApiUrl').value = settings.API_URL || '';
+            document.getElementById('settingsWsUrl').value = settings.WS_URL || '';
+            document.getElementById('settingsUserget').value = JSON.stringify(settings.USERGET_PAYLOAD, null, 2) || '';
+            document.getElementById('settingsJoPayload').value = settings.JO_PAYLOAD || '';
+            document.getElementById('settingsHeartbeat').value = settings.HEARTBEAT_ACK || '';
+            document.getElementById('settingsAuthReply').value = settings.AUTH_CONFIRM_REPLY || '';
+        }
+
+        async function saveSettings() {
+            try {
+                let usergetPayload;
+                try {
+                    usergetPayload = JSON.parse(document.getElementById('settingsUserget').value);
+                } catch (e) {
+                    log('❌ Invalid JSON in USERGET Payload', 'error');
+                    alert('Invalid JSON format in USERGET Payload');
+                    return;
+                }
+
+                const settings = {
+                    API_URL: document.getElementById('settingsApiUrl').value,
+                    WS_URL: document.getElementById('settingsWsUrl').value,
+                    USERGET_PAYLOAD: usergetPayload,
+                    JO_PAYLOAD: document.getElementById('settingsJoPayload').value,
+                    HEARTBEAT_ACK: document.getElementById('settingsHeartbeat').value,
+                    AUTH_CONFIRM_REPLY: document.getElementById('settingsAuthReply').value
+                };
+
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('✅ CONFIGURATION SAVED');
+                    log('✅ Settings saved successfully', 'success');
+                } else {
+                    log(`❌ Failed to save: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function resetSettings() {
+            if (!confirm('⚠️ Reset all settings to defaults?')) return;
+
+            try {
+                const response = await fetch('/api/settings/reset', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    loadSettingsToForm(data.settings);
+                    showToast('🔄 RESET TO DEFAULTS');
+                    log('🔄 Settings reset to defaults', 'success');
+                }
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // =========================
+        // SERVER CONNECTION
+        // =========================
+        function connectToServer() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            serverWs = new WebSocket(`${protocol}//${window.location.host}`);
+
+            serverWs.onopen = () => {
+                const statusEl = document.getElementById('serverStatus');
+                statusEl.classList.remove('disconnected');
+                statusEl.classList.add('connected');
+                document.getElementById('serverDot').classList.add('active');
+                document.getElementById('serverText').textContent = 'SYSTEM ONLINE';
+                log('🟢 Connected to local server', 'success');
+            };
+
+            serverWs.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                
+                switch (data.type) {
+                    case 'init':
+                        updateStatus(data.data.status.ws, data.data.status.login, data.data.status.auth);
+                        updateButtons(data.data.status.ws);
+                        loadSettingsToForm(data.data.settings);
+                        break;
+
+                    case 'log':
+                        log(data.data.message, data.data.type);
+                        break;
+                        
+                    case 'status':
+                        updateStatus(data.data.ws, data.data.login, data.data.auth);
+                        updateButtons(data.data.ws);
+                        break;
+                        
+                    case 'sent':
+                        msgSentCount++;
+                        updateStats();
+                        addMessage('sent', data.data.message, data.data.rh);
+                        break;
+                        
+                    case 'received':
+                        msgReceivedCount++;
+                        updateStats();
+                        addMessage('received', data.data.message, data.data.rh);
+                        break;
+                        
+                    case 'heartbeat':
+                        heartbeatCount++;
+                        updateStats();
+                        break;
+                        
+                    case 'userget':
+                        log('📡 UserGet response received', 'success');
+                        break;
+
+                    case 'settings_updated':
+                        loadSettingsToForm(data.data);
+                        break;
+                }
+            };
+
+            serverWs.onclose = () => {
+                const statusEl = document.getElementById('serverStatus');
+                statusEl.classList.remove('connected');
+                statusEl.classList.add('disconnected');
+                document.getElementById('serverDot').classList.remove('active');
+                document.getElementById('serverText').textContent = 'RECONNECTING...';
+                
+                updateStatus(false, false, false);
+                updateButtons(false);
+                
+                setTimeout(connectToServer, 3000);
+            };
+
+            serverWs.onerror = () => {
+                log('🔴 Server connection error', 'error');
+            };
+        }
+
+        // =========================
+        // CONTROLS
+        // =========================
+        async function startConnection() {
+            const btn = document.getElementById('btnStart');
+            btn.innerHTML = '<span class="loading-spinner"></span> INITIALIZING...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/start', { method: 'POST' });
+                const data = await response.json();
+                
+                if (!data.success) {
+                    log(`❌ Start failed: ${data.message}`, 'error');
+                    btn.innerHTML = '<span>⚡</span> INITIALIZE CONNECTION';
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+                btn.innerHTML = '<span>⚡</span> INITIALIZE CONNECTION';
+                btn.disabled = false;
+            }
+        }
+
+        async function disconnect() {
+            try {
+                await fetch('/api/disconnect', { method: 'POST' });
+                log('🔌 Disconnected', 'info');
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function sendCustomMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            try {
+                const response = await fetch('/api/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    input.value = '';
+                } else {
+                    log(`❌ Send failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendCustomMessage();
+            }
+        }
+
+        function clearLogs() {
+            document.getElementById('logContainer').innerHTML = '';
+            document.getElementById('terminalView').innerHTML = '';
+            document.getElementById('messagesView').innerHTML = '';
+            document.getElementById('packetsView').innerHTML = '';
+            allMessages = [];
+            logCount = 0;
+            packetCount = 0;
+            document.getElementById('logCount').textContent = '0 entries';
+            document.getElementById('packetCount').textContent = '0 packets';
+            log('🗑️ Data cleared', 'info');
+        }
+
+        // =========================
+        // INIT
+        // =========================
+        connectToServer();
+        log('🎲 LUDO STAR CYBER CLIENT v2.0', 'info');
+        log('⚡ System initialized. Ready for connection.', 'info');
+    </script>
+</body>
+</html>
