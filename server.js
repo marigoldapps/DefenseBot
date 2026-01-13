@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // =========================
 // SETTINGS FILE
@@ -322,7 +322,9 @@ app.get('/api/status', (req, res) => {
         connected: gameWs && gameWs.readyState === WebSocket.OPEN
     });
 });
-
+app.get("/", (req, res) => {
+    res.send("Ludo Star Client is running ✅");
+});
 // =========================
 // CLIENT WEBSOCKET SERVER
 // =========================
